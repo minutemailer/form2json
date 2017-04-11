@@ -7,6 +7,7 @@ exports.default = form2json;
 function extractFieldNames(name) {
     var expression = /([^\]\[]+)/g;
     var elements = [];
+    var searchResult = void 0;
 
     while (searchResult = expression.exec(name)) {
         elements.push(searchResult[0]);
@@ -15,13 +16,19 @@ function extractFieldNames(name) {
     return elements;
 }
 
-function attachData(target, names, value) {
+function attachData(target, names, value, type) {
     var currentTarget = target;
     var lastIndex = names.length - 1;
 
     names.forEach(function (name, i) {
         if (currentTarget[name] === undefined) {
-            currentTarget[name] = i === lastIndex ? value : {};
+            if (type === 'checkbox') {
+                currentTarget[name] = i === lastIndex ? [value] : {};
+            } else {
+                currentTarget[name] = i === lastIndex ? value : {};
+            }
+        } else if (Object.prototype.toString.call(currentTarget[name]) === '[object Array]') {
+            currentTarget[name].push(value);
         }
 
         currentTarget = currentTarget[name];
@@ -51,7 +58,7 @@ function form2json(form) {
 
         var names = extractFieldNames(name);
 
-        attachData(obj, names, value);
+        attachData(obj, names, value, type);
     });
 
     return obj;
