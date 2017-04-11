@@ -4,6 +4,7 @@
   "description": "Convert html forms to json objects",
   "main": "dist/index.js",
   "scripts": {
+    "lint": "eslint src/index.js",
     "test": "jest"
   },
   "repository": {
